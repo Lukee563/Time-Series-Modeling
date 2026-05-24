@@ -52,9 +52,9 @@ def imputer(data, broken_cols_dict):
 
         # Fit the non-parametric XGBoost Regressor
         model = XGBRegressor(
-            n_estimators=500,
+            n_estimators=700,
             learning_rate=0.05,
-            max_depth=5,
+            max_depth=7,
             subsample=0.8,
             colsample_bytree=0.8,
             random_state=42,
