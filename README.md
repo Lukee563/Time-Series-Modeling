@@ -36,10 +36,13 @@ The pipeline follows a rigorous order of operations to maintain statistical inte
 
 ## Getting Started
 This repository is built for modularity. To integrate the construction pipeline into your own analysis, ensure the project root is in your sys.path:
-
+```
 import sys
 sys.path.append('path/to/Time-Series-Modeling')
 
 from scripts.data_construction import data_construction
+```
 # Returns a clean, model-ready panel
+```
 df = data_construction(path="data/raw/cocoa_beans_historical.csv")
+```
