@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import seaborn as sns
 from scripts.ts_imputer import imputer
 
 def data_construction(path):
