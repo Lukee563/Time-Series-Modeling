@@ -1,48 +1,47 @@
-# Time-Series-Modeling: Hypixel Skyblock Cocoa Market
+#  Causal Effects in High-Frequency Virtual Markets
+## Estimating the Causal Effect of Hypixel Skyblock's 15% Price Increase on Booster Cookie Prices
 
-A production-ready data engineering and modeling pipeline designed to ingest, sanitize, and reconstruct high-velocity time-series data from the Hypixel Skyblock Cocoa Bean market. This framework addresses critical data quality issues by employing multivariate, model-based imputation techniques that maintain strict temporal causality.
-
-## Pipeline Architecture
-
+A production-ready econometric pipeline designed to ingest, align, and analyze high-frequency time-series data from the Hypixel Skyblock market. This project utilizes a Difference-in-Differences (DiD) framework to quantify the causal impact of the April 15, 2026, premium currency restructuring on the real value of Booster Cookies relative to a composite macroeconomic control index.
 
 ## Project Context
-The Hypixel Skyblock economy is a highly volatile, player-driven marketplace. Accurate price discovery is difficult due to sparse data and missing order-book entries. This project serves as a robust quantitative engine to:
-* Prevent Look-Ahead Bias: Implements chronological data processing to ensure forecasting models are trained strictly on past observations.
-* Recover Missing Market Intelligence: Uses a sequential XGBoost imputation pipeline to reconstruct fragmented minBuy and minSell price points, the very edge of the order book. 
-* Bridge Market Data: Leverages autoregressive (AR) feature engineering and rolling window statistics to provide a continuous, model-ready panel for arbitrage analysis.
+The Hypixel Skyblock economy is a highly volatile, player-driven marketplace. Isolating the true macroeconomic pass-through of a developer policy shock is difficult due to high-frequency speculative noise and localized asset bubbles. This quantitative engine solves these issues to provide clean causal estimates:
+* **Composite Control Engineering:** Dynamically aggregates 12 individual Perfect Gemstone markets to construct a stable, economy-wide commodity index, successfully satisfying the Parallel Trends assumption.
+* **High-Frequency Noise Filtering:** Implements a chronological 3-day binning architecture to smooth out daily micro-variance and eliminate short-term liquidity shocks, reducing localized asset skew.
+* **Robust Causal Identification:** Deploys an OLS Fixed Effects panel model utilizing Newey-West HAC (Heteroskedasticity and Autocorrelation Consistent) standard errors (with a mathematically optimized 4-period lag) to rigorously estimate relative purchasing power transfers.
 
 ## Repository Structure
-```
-Time-Series-Modeling/
-├── analysis/
-│   └── modeling.ipynb       # Jupyter notebook for research, backtesting, and visualization
-├── data/
-│   ├── raw/                 # Unprocessed API response
-│   └── cleaned/             # Imputed panel ready for modeling
-├── scripts/
-│   ├── data_construction.py # Data ingestion and feature engineering
-│   ├── market_api.py        # Logic for interacting with Hypixel marketplace endpoints
-│   └── ts_imputer.py        # Custom multivariate XGBoost imputation engine
-└── .gitignore               # Standard Python VSCode GitIgnore
-```
+    Virtual-Economies-DiD/
+    ├── analysis/
+    │   └── modeling.ipynb       # Jupyter notebook for DiD event study, parallel trends verification, and regression outputs
+    ├── data/
+    │   ├── raw/                 # Unprocessed API responses for the Booster Cookie and 12 Perfect Gemstone variants
+    │   └── cleaned/             # 3-day binned, long-format panel data ready for econometric modeling
+    ├── scripts/
+    │   ├── data_construction.py # Data ingestion, structural alignment, and panel assembly
+    │   ├── market_api.py        # Logic for parallel ingestion of Coflnet historical market endpoints
+    └── .gitignore               # Standard Python VSCode GitIgnore
 
 ## Technical Approach
-The pipeline follows a rigorous order of operations to maintain statistical integrity:
+The pipeline follows a strict econometric order of operations to maintain statistical integrity:
 
-1. Temporal Alignment: Raw timestamps are parsed and sorted chronologically to eliminate data leakage.
-2. Dense Interpolation: Highly continuous variables (e.g., buy, sell, volumes) are bridged using linear interpolation.
-3. Temporal Feature Engineering: AR(1) spot lags and moving weekly window features are injected to capture momentum.
-4. Sequential Imputation: XGBoost is deployed to surgically reconstruct the sparse boundary layers (minBuy/minSell) of the market, ensuring the imputed values are statistically consistent with observed global market trends.
+1. **Parallel API Ingestion:** Automates the retrieval of historical pricing vectors for both the treatment asset (Booster Cookies) and the counterfactual assets (Mining Commodities).
+2. **Temporal Alignment & Binning:** Raw timestamps are parsed, sorted, and downsampled into 3-day rolling averages to compress residual variance and normalize the error distribution (resolving Jarque-Bera non-normality).
+3. **Panel Assembly:** The binned time-series are structurally stacked into a long-format panel, injecting deterministic policy indicators (`Treatment`, `Post`, and `DiD_Interaction`).
+4. **Estimation:** The final model isolates the specific real-value acceleration of the premium currency, yielding an R-squared of 0.974 within the localized event window.
 
 ## Getting Started
-This repository is built for modularity. To integrate the construction pipeline into your own analysis, ensure the project root is in your sys.path:
-```
-import sys
-sys.path.append('path/to/Time-Series-Modeling')
+To integrate the construction pipeline into your own analysis and replicate the panel structure:
 
-from scripts.data_construction import data_construction
-```
-# Returns a clean, model-ready panel
-```
-df = data_construction(path="data/raw/cocoa_beans_historical.csv")
-```
+    import sys
+    import os
+    sys.path.append(os.path.abspath('..'))
+
+    from scripts.market_api import data_pull
+    from scripts.data_construction import assemble_panel
+
+    # 1. Pull the latest historical market data
+    data_pull('https://sky.coflnet.com/api/bazaar/BOOSTER_COOKIE/history', 'data/raw/booster_cookie_historical.csv')
+
+    # 2. Construct the binned, model-ready panel
+    # (Automatically handles composite indexing if multiple counterfactuals are present in data/raw/)
+    panel_df = assemble_panel(bin_frequency='3D')
