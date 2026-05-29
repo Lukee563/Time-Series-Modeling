@@ -1,13 +1,15 @@
 #  Causal Effects in High-Frequency Virtual Markets
 ## Estimating the Causal Effect of Hypixel Skyblock's 15% Price Increase on Booster Cookie Prices
 
-A production-ready econometric pipeline designed to ingest, align, and analyze high-frequency time-series data from the Hypixel Skyblock market. This project utilizes a Difference-in-Differences (DiD) framework to quantify the causal impact of the April 15, 2026, premium currency restructuring on the real value of Booster Cookies relative to a composite macroeconomic control index.
+An econometric pipeline designed to ingest, align, and analyze high-frequency time-series data from the Hypixel Skyblock market. This project utilizes a Difference-in-Differences (DiD) framework to quantify the causal impact of the April 15, 2026, premium currency restructuring on the real value of Booster Cookies relative to a composite commodity control index. These Cookies are bought exclusively with real-life currency and are only introduced to the economy through online transactions. 
 
 ## Project Context
-The Hypixel Skyblock economy is a highly volatile, player-driven marketplace. Isolating the true macroeconomic pass-through of a developer policy shock is difficult due to high-frequency speculative noise and localized asset bubbles. This quantitative engine solves these issues to provide clean causal estimates:
+The Hypixel Skyblock economy is a highly volatile, player-driven marketplace. Isolating the true macroeconomic pass-through of a developer policy shock is difficult due to high-frequency speculative noise and localized asset bubbles. The primary challenge in estimating the effect of the price hike on booster cookie prices is that we can only observe booster cookie prices in the case where the hike occurred, and not the counterfactual where the change never happened at all. I've constructed a Synthetic Control Group of specific assets on the Hypixel Skyblock Marketplace with properties that insulate them from changes in the Booster Cookie market, but historically follow the general trend of Booster Cookies, allowing us to use their price level as a proxy for the value of the Booster Cookies if the price shift had not occurred. 
+
+## Core Components 
 * **Composite Control Engineering:** Dynamically aggregates 12 individual Perfect Gemstone markets to construct a stable, economy-wide commodity index, successfully satisfying the Parallel Trends assumption.
 * **High-Frequency Noise Filtering:** Implements a chronological 3-day binning architecture to smooth out daily micro-variance and eliminate short-term liquidity shocks, reducing localized asset skew.
-* **Robust Causal Identification:** Deploys an OLS Fixed Effects panel model utilizing Newey-West HAC (Heteroskedasticity and Autocorrelation Consistent) standard errors (with a mathematically optimized 4-period lag) to rigorously estimate relative purchasing power transfers.
+* **Robust Causal Identification:** Deploys an OLS Fixed Effects panel model utilizing Newey-West HAC (Heteroskedasticity and Autocorrelation Consistent) standard errors (with a mathematically optimized 4-period lag) to rigorously estimate relative purchasing power transfers between free-to-play and pay-to-win players. 
 
 ## Repository Structure
     Virtual-Economies-DiD/
@@ -22,7 +24,7 @@ The Hypixel Skyblock economy is a highly volatile, player-driven marketplace. Is
     └── .gitignore               # Standard Python VSCode GitIgnore
 
 ## Technical Approach
-The pipeline follows a strict econometric order of operations to maintain statistical integrity:
+The pipeline follows a strict order of operations to maintain statistical integrity:
 
 1. **Parallel API Ingestion:** Automates the retrieval of historical pricing vectors for both the treatment asset (Booster Cookies) and the counterfactual assets (Mining Commodities).
 2. **Temporal Alignment & Binning:** Raw timestamps are parsed, sorted, and downsampled into 3-day rolling averages to compress residual variance and normalize the error distribution (resolving Jarque-Bera non-normality).
