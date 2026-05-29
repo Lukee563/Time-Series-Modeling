@@ -2,10 +2,8 @@ import pandas as pd
 import requests
 import os
 
-def data_pull():
-    url = "https://sky.coflnet.com/api/bazaar/ENCHANTED_COCOA/history"
-    output_path = os.path.join("data", "raw", "cocoa_beans_historical.csv")
-    
+def data_pull(url, output):
+    output_path = os.path.join("data", "raw", output)
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()

@@ -9,8 +9,8 @@ def data_construction(path):
     such as minSell and minBuy. 
     """
 
-    ## Pull static market data for the Hypixel - Minecraft Cocoa Bean Market
-    cocoa_data = pd.read_csv(path)
+    ## Pull static market data for the Hypixel - Booster Cookie Market
+    cookie_data = pd.read_csv(path)
 
     ## ----------------------------------------------------------------------
     # An immediate problem presents itself in the form of missing values across
@@ -23,39 +23,39 @@ def data_construction(path):
     ## ----------------------------------------------------------------------
 
     # Sort chronologically to prevent look-ahead bias
-    cocoa_data["timestamp"] = pd.to_datetime(cocoa_data["timestamp"], format="ISO8601")
-    cocoa_data = cocoa_data.sort_values("timestamp", ascending=True).reset_index(drop=True)
+    cookie_data["timestamp"] = pd.to_datetime(cookie_data["timestamp"], format="ISO8601")
+    cookie_data = cookie_data.sort_values("timestamp", ascending=True).reset_index(drop=True)
 
     ## Clear Most Recent (Incomplete) Day
-    cocoa_data = cocoa_data[1:len(cocoa_data)]
+    cookie_data = cookie_data[1:len(cookie_data)]
 
     # Interpolate the Highly Dense Columns with linear interpolation
     dense_cols = ["maxSell", "buy", "sell", "buyVolume", "sellVolume"]
-    cocoa_data[dense_cols] = cocoa_data[dense_cols].interpolate(method="linear")
+    cookie_data[dense_cols] = cookie_data[dense_cols].interpolate(method="linear")
 
     # Engineer lags
-    cocoa_data['buyMovingWeek_lag_1'] = cocoa_data['buyMovingWeek'].shift(1)
-    cocoa_data['sellMovingWeek_lag_1'] = cocoa_data['sellMovingWeek'].shift(1)
-    cocoa_data["buy_lag_1"] = cocoa_data["buy"].shift(1)
-    cocoa_data["sell_lag_1"] = cocoa_data["sell"].shift(1)
+    cookie_data['buyMovingWeek_lag_1'] = cookie_data['buyMovingWeek'].shift(1)
+    cookie_data['sellMovingWeek_lag_1'] = cookie_data['sellMovingWeek'].shift(1)
+    cookie_data["buy_lag_1"] = cookie_data["buy"].shift(1)
+    cookie_data["sell_lag_1"] = cookie_data["sell"].shift(1)
 
     # Fix the Row 0 shift NaN
     lag_cols = ['buyMovingWeek_lag_1', 'sellMovingWeek_lag_1', 'buy_lag_1', 'sell_lag_1']
-    cocoa_data[lag_cols] = cocoa_data[lag_cols].bfill()
+    cookie_data[lag_cols] = cookie_data[lag_cols].bfill()
 
     # Build the Repair Dictionary
-    cols = cocoa_data.columns
+    cols = cookie_data.columns
     broken_cols = {}
 
     for c in cols:
-        na_values = cocoa_data[c].isna().sum()
-        na_percent = round((na_values / len(cocoa_data)), 4)
+        na_values = cookie_data[c].isna().sum()
+        na_percent = round((na_values / len(cookie_data)), 4)
 
         if na_values > 0:
             broken_cols[c] = float(na_percent)
 
     # Imputation Task
-    cocoa_data_clean = imputer(cocoa_data, broken_cols)
-    cocoa_data_clean.to_csv("data/cleaned/cocoa_beans_historical_cleaned.csv")
-    return cocoa_data_clean
+    cookie_data_clean = imputer(cookie_data, broken_cols)
+    cookie_data_clean.to_csv("data/cleaned/cookie_market_cleaned.csv")
+    return cookie_data_clean
 
