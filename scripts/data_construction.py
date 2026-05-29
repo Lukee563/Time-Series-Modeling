@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from scripts.ts_imputer import imputer
 
 def data_construction(path):
     """ 
@@ -54,8 +53,7 @@ def data_construction(path):
         if na_values > 0:
             broken_cols[c] = float(na_percent)
 
-    # Imputation Task
-    cookie_data_clean = imputer(cookie_data, broken_cols)
-    cookie_data_clean.to_csv("data/cleaned/cookie_market_cleaned.csv")
-    return cookie_data_clean
+
+    cookie_data.to_csv("data/cleaned/cookie_market_cleaned.csv")
+    return cookie_data
 
