@@ -3,9 +3,9 @@ import numpy as np
 
 def data_construction(path):
     """ 
-    Constructs lagged variables, interpolates columns with low missing NA values, 
-    calls the imputer function to estimate values for the boundary columns 
-    such as minSell and minBuy. 
+    Constructs lagged variables, interpolates columns with low missing NA values,
+    calls the imputer function to estimate values for the boundary columns
+    such as minSell and minBuy.
     """
 
     ## Pull static market data for the Hypixel - Booster Cookie Market
